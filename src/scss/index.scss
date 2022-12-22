@@ -1,0 +1,50 @@
+// Import all of Bootstrap's CSS
+@import "~bootstrap/scss/bootstrap";
+
+
+body {
+/*     overflow: hidden;
+ */}
+
+#fridge-container {
+    background-color: rgb(241, 241, 241);
+    background-image: url('../assets/img/newFridgeCoding.png');
+    background-position:top;
+    background-size:contain;
+    background-repeat: no-repeat;
+}
+
+#placeholderOne {
+    height: 30px;
+}
+
+/* INFO PANEL */
+.infoPanelStyling {
+    font-size: 1rem;
+    padding: 0 0.25rem;
+}
+
+// FRIDGE CONTAINER
+#fridge-scroll-container {
+    height: 700px;
+    width: 90%;
+    overflow-y: auto;
+}
+
+#fridge-products-container {
+    gap: 1em;
+}
+
+//ProgressBar
+.progressBarWrapper {
+    height: 60px;
+}
+
+.progressBarContent {
+    width: 99%;
+}
+
+//Card
+.card-img-top {
+    width: 60px;
+}
