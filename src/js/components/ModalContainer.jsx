@@ -2,6 +2,7 @@
 import { Modal, Button } from "react-bootstrap";
 import { useState } from "react";
 import ModalShoppingList from "./shoppingList/ModalShoppingList";
+import ModalInfoDisplay from "./shoppingList/ModalInfoDisplay";
 
 function ModalContainer(props){
 
@@ -20,7 +21,7 @@ function ModalContainer(props){
                 <Modal.Title>{showCart ? "Shopping List" : "Product Information"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ModalShoppingList />
+                {showCart ? <ModalShoppingList stockCallback={props.stockCallback} content={props.shoppingList} /> : <ModalInfoDisplay content={props.infoPanel} />}
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={props.onHide} variant="secondary">Close</Button>

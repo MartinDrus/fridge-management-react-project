@@ -28,12 +28,13 @@ function App() {
 
 
 	useEffect(() => {
-    localStorage.setItem('content', JSON.stringify(content));
-	}, [content]);
+		console.log("useEffect fires");
+		localStorage.setItem('content', JSON.stringify(content));
+		localStorage.setItem('shopping', JSON.stringify(shoppingList));
+	}, [content, shoppingList]);
 
-	useEffect(() => {
-    localStorage.setItem('shopping', JSON.stringify(shoppingList));
-	}, [shoppingList]);
+	// useEffect(() => {
+	// }, [shoppingList]);
 
 	const handleNewFridgeItem = (newItem)=>{
 		if ((capacity - newItem.volume) >= 0) {
@@ -63,12 +64,10 @@ function App() {
 		contentCopy.splice(targetContentIndex, 1, wantedProduct);
 		setContent(contentCopy);
 
-
-		handlePutOnLIst()
-		
+		handlePutOnList()		
 	}
 
-	function handlePutOnLIst(){
+	function handlePutOnList(){
 		let shoppingListProducts = [];
 		content.forEach(product => {
 			if (product.repurchase) shoppingListProducts.push(product);
@@ -91,6 +90,7 @@ function App() {
 		setContent(contentCopy)
 	}
 
+	console.log(content);
 	let fridgeItems = content.map(product => {
 		return <ProductCardItem 
 			key={product.id}
@@ -106,7 +106,31 @@ function App() {
 		setModalContent(props)
 	};
 
-	console.log(shoppingList);
+	const handleStock = (product, todo) => {
+		let shoppingListCopy = [...shoppingList]
+		let targetIndex = shoppingListCopy.findIndex(target => target.id === product.id);
+
+		if (product.stock === 1 && todo < 0) {
+			shoppingListCopy.splice(targetIndex, 1);
+
+			let boughtTargetIndex = contentCopy.findIndex(target => target.id === product.id);
+			let boughtItem = contentCopy[boughtTargetIndex];
+			boughtItem.repurchase = false;
+
+			handlePutOnList()
+			setContent(contentCopy)
+
+		} else {
+
+			product.stock += todo;
+			console.log(product);
+			shoppingListCopy.splice(targetIndex, 1, product);
+			setShoppingList(shoppingListCopy);
+
+
+		}
+
+	}
 
 	return (
 
@@ -114,7 +138,7 @@ function App() {
 			<div className="row" id='placeholderOne'>
 				{/* <!-- Platzhalter --> */}
 			</div>
-			<ModalContainer infoPanel={modalContent} shoppingList={shoppingList} show={modalShow} onHide={() => setModalShow(false)}/>
+			<ModalContainer infoPanel={modalContent} shoppingList={shoppingList} stockCallback={handleStock} show={modalShow} onHide={() => setModalShow(false)}/>
 			<div className="row">
 				{/* INFO PANEL */}
 				<InfoPanel products={content} leftSpace={capacity} showModalCallback={openModal}/>

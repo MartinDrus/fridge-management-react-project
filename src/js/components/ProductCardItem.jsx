@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUtensils, faCartShopping, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 
+import getProductName from '../helper/formattedProductName';
 import MultipleProductsBadge from './MultipleProductsBadge'
 import { useState } from 'react';
 
@@ -58,9 +59,6 @@ function ProductCardItem(props) {
     )
 }
 
-function getProductName(name){
-    let formattedName = name.at(0).toUpperCase()+name.substring(1).toLowerCase();
-    return formattedName;
-}
+
 
 export default ProductCardItem;

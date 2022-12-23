@@ -1,6 +1,7 @@
 import { useState } from "react";
 import isExpired from "../helper/determineExpiration";
 
+
 function InfoPanel(props) {
 
     const totalStock = props.products.reduce((currentStock, product) => product.stock + currentStock, 0);
