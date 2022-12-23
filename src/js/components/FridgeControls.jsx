@@ -1,20 +1,12 @@
 
 function FridgeControls(props) {
-    
-    function handleDefrosting(evt) {
-        props.defrostCallback();
-    }
 
-    function handleSorting(evt) {
-        props.sortCallback();
-    }
-
-    function handleCleaning(evt) {
-        props.cleanCallback();
-    }
+    const handleDefrosting = () => props.defrostCallback();
+    const handleSorting = () => props.sortCallback();
+    const handleCleaning = () => props.cleanCallback();
+    const handleShoppingListView = () => props.showModalCallback();
 
     return (
-
         <div className="col-2 py-4">
                 {/* <!-- Überschrift des Control Panels --> */}
                 <div>
@@ -40,10 +32,10 @@ function FridgeControls(props) {
                 >Defrost</button>
 
                 {/* <!-- Button für optionale erweiterte Funktionen --> */}
-                <button type="button" className="btn btn-info col-12 mb-4 position-relative" data-bs-toggle="modal tooltip" data-bs-target="#exampleModal" id="show-shopping-list-btn"  data-bs-placement="left" data-bs-title="Your personal shopping list" >
+                <button onClick={handleShoppingListView} type="button" className="btn btn-info col-12 mb-4 position-relative" id="show-shopping-list-btn"  data-bs-placement="left" data-bs-title="Your personal shopping list" >
                     Shopping List
                     <span id="shopping-badge" className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
+                        {props.shoppingListSize}
                         <span className="visually-hidden">Amount of items on the shopping list</span>
                     </span>
                 </button>

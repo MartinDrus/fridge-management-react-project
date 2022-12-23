@@ -21,7 +21,6 @@ function isExpired(product, when){
     // Nutze als Case im Fall vom Argument "tomorrow" die Tatsache, dass das MHD nur morgen ablaufen kann wenn es heute erreicht wurde 
     switch (when) {        
         case "tomorrow":
-            //console.log("Difference "+(expirationDate.getTime()-now.getTime())+" now  "+now.getTime()+"   product "+ expirationDate.getTime());
             return expirationDate.getTime() === now.getTime();
         case 1:
             return expirationDate.getTime() === ONE_DAY+now.getTime();

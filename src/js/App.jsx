@@ -19,18 +19,24 @@ import isExpired from './helper/determineExpiration'
 function App() {
 	// Statevariable fuers Speichern der Todos
 	let [content, setContent] = useState(fetchFromLocalStorage());
+	let [shoppingList, setShoppingList] = useState(fetchShoppingListFromLocalStorage())
+	let [modalContent, setModalContent] = useState([]);
 
-	// Hook zum Ausfuehren von Seiten-Effekt-Code bei Aenderung im Lifecycle
+	const [modalShow, setModalShow] = useState(false);
+	const capacity = content.reduce((freeCapacity, product) => freeCapacity - (product.stock * product.volume), 100);
+	let contentCopy = [...content];
+
+
 	useEffect(() => {
-    // Speichere die bisherigen Produkte mit allem drum und dran im localStorage
     localStorage.setItem('content', JSON.stringify(content));
 	}, [content]);
 
-	const capacity = content.reduce((freeCapacity, product) => freeCapacity - (product.stock * product.volume), 100);
+	useEffect(() => {
+    localStorage.setItem('shopping', JSON.stringify(shoppingList));
+	}, [shoppingList]);
 
-	function handleNewFridgeItem(newItem) {
+	const handleNewFridgeItem = (newItem)=>{
 		if ((capacity - newItem.volume) >= 0) {
-			let contentCopy = [...content];
 			let targetContentIndex = contentCopy.findIndex(product => product.name.toLowerCase() === newItem.name.toLowerCase() && product.date === newItem.date);
 			if (targetContentIndex >= 0) {
 				contentCopy[targetContentIndex].stock +=1;
@@ -42,31 +48,37 @@ function App() {
 		}
 	}
 
-	function handleDeleteProduct(productId) {
-		let contentCopy = [...content];
+	const handleDeleteProduct = (productId)=>{
 		let targetContentIndex = contentCopy.findIndex(product => product.id === productId);
 		let elFound = contentCopy[targetContentIndex];
 		if(elFound.stock > 1) {
 			elFound.stock -=1;
-			setContent(contentCopy);
-		} else {
-			contentCopy.splice(targetContentIndex, 1);
-			setContent(contentCopy);
-		}
-	}
-
-	function handleAddToCart(wantedProduct) {
-		let contentCopy = [...content];
-		let targetContentIndex = contentCopy.findIndex(product => product.id === wantedProduct.id);
-		contentCopy.splice(targetContentIndex, 1, wantedProduct);
+		} else contentCopy.splice(targetContentIndex, 1);
 		setContent(contentCopy);
 	}
 
-	function handleDefrosting() {
-		setContent([]);
+	const handleAddToCart = (wantedProduct)=>{
+		let targetContentIndex = contentCopy.findIndex(product => product.id === wantedProduct.id);
+
+		contentCopy.splice(targetContentIndex, 1, wantedProduct);
+		setContent(contentCopy);
+
+
+		handlePutOnLIst()
+		
 	}
 
-	function handleCleaning() {
+	function handlePutOnLIst(){
+		let shoppingListProducts = [];
+		content.forEach(product => {
+			if (product.repurchase) shoppingListProducts.push(product);
+		})
+		setShoppingList(shoppingListProducts)
+	}
+
+	const handleDefrosting = () => setContent([]);
+
+	const handleCleaning = ()=>{
 		let edibleProducts = []
 		content.forEach(product => {
 			if (!isExpired(product)) edibleProducts.push(product)
@@ -74,8 +86,7 @@ function App() {
 		setContent(edibleProducts);
 	}
 
-	function handleSorting() {
-		let contentCopy = [...content];
+	const handleSorting = ()=>{
 		contentCopy.sort((a, b) => new Date(a.date) - new Date(b.date));
 		setContent(contentCopy)
 	}
@@ -88,45 +99,51 @@ function App() {
 			addProductCallback={handleNewFridgeItem}
 			checkedForCart={handleAddToCart}
 		/>
-	})
+	});
 
-  return (
+	const openModal = (props) => {
+		setModalShow(true)
+		setModalContent(props)
+	};
 
-    <div id="fridge-app-container" className="container-fluid">
-    	<div className="row" id='placeholderOne'>
-        	{/* <!-- Platzhalter --> */}
-    	</div>
-		<ModalContainer open/>
-    	<div className="row">
-        	{/* INFO PANEL */}
-			<InfoPanel products={content} leftSpace={capacity}/>
+	console.log(shoppingList);
 
-			{/* FRIDGE CONTAINER */}
-			<FridgeContentContainer>
-          		{fridgeItems}
-        	</FridgeContentContainer>
+	return (
 
+		<div id="fridge-app-container" className="container-fluid">
+			<div className="row" id='placeholderOne'>
+				{/* <!-- Platzhalter --> */}
+			</div>
+			<ModalContainer infoPanel={modalContent} shoppingList={shoppingList} show={modalShow} onHide={() => setModalShow(false)}/>
+			<div className="row">
+				{/* INFO PANEL */}
+				<InfoPanel products={content} leftSpace={capacity} showModalCallback={openModal}/>
 
-			{/* CONTROLS */}
-			<FridgeControls sortCallback={handleSorting} cleanCallback={handleCleaning} defrostCallback={handleDefrosting}/>
-    	</div>
+				{/* FRIDGE CONTAINER */}
+				<FridgeContentContainer>
+					{fridgeItems}
+				</FridgeContentContainer>
 
-		{/* PROGRESS BAR */}
-		<ProgressBarContainer storage={capacity} />
+				{/* CONTROLS */}
+				<FridgeControls shoppingListSize={shoppingList.length} showModalCallback={openModal} sortCallback={handleSorting} cleanCallback={handleCleaning} defrostCallback={handleDefrosting}/>
+			</div>
 
-		{/* <!-- Bereich für das Formular zum Hinzufügen neuer Produkte --> */}
-		<div className="row justify-content-center">
-			{/* PRESETS */}
-			<Presets/>
+			{/* PROGRESS BAR */}
+			<ProgressBarContainer storage={capacity} />
 
-			{/* ADD PRODUCT */}
-			<FridgeContentForm newProductCallback={handleNewFridgeItem} />
+			{/* <!-- Bereich für das Formular zum Hinzufügen neuer Produkte --> */}
+			<div className="row justify-content-center">
+				{/* PRESETS */}
+				<Presets/>
 
-			<div className='col-0'>
-			{/* <!-- Platzhalter --> */}
+				{/* ADD PRODUCT */}
+				<FridgeContentForm newProductCallback={handleNewFridgeItem} />
+
+				<div className='col-0'>
+				{/* <!-- Platzhalter --> */}
+				</div>
 			</div>
 		</div>
-    </div>
 
 
   )
@@ -140,6 +157,11 @@ function fetchFromLocalStorage() {
 
   // return mit nullish operator (wenn linke Seite null oder undefined, returne recht seite)
   return storedItems ?? [];
+}
+
+function fetchShoppingListFromLocalStorage() {
+	let storedShoppingList = JSON.parse(localStorage.getItem('shopping'));
+	return storedShoppingList ?? [];
 }
 
 export default App

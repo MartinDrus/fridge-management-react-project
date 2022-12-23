@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUtensils, faCartShopping, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faUtensils, faCartShopping, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 import MultipleProductsBadge from './MultipleProductsBadge'
 import { useState } from 'react';
