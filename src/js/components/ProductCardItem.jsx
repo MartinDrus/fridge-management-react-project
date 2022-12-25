@@ -11,8 +11,15 @@ const plus = <FontAwesomeIcon icon={faPlus} /> */
 
 function ProductCardItem(props) {
 
-    let [checked, setChecked] = useState(props.product.repurchase)
+    let [checked, setChecked] = useState(false);
 
+    function adjustRepurchase(changeChecked) {
+        setChecked(currentlyChecked => {
+            return currentlyChecked = changeChecked;
+        })
+    }
+
+    
     let picPath = `../src/assets/img/foodIcons/${props.product.name.toLowerCase()}.png`;
     let expDate = new Date(props.product.date).toLocaleDateString('de-DE');
     let shownName = getProductName(props.product.name);
@@ -29,8 +36,8 @@ function ProductCardItem(props) {
     }
 
     function handleAddToCart(evt) {
-        props.product.repurchase = !checked;
-        setChecked(!checked)
+        props.product.repurchase = evt.target.checked
+        adjustRepurchase(checked)
         props.checkedForCart(props.product)
     }
     
@@ -45,7 +52,7 @@ function ProductCardItem(props) {
                     <button type="button" className="btn btn-sm btn-outline-primary" id="deleteBtn" onClick={handleDeleteProduct}>
                         <FontAwesomeIcon icon={faUtensils} />
                     </button>
-                    <input type="checkbox" className="btn-check" id={props.product.id}  autoComplete="off" checked={checked} onChange={handleAddToCart}/>
+                    <input type="checkbox" className="btn-check" id={props.product.id}  autoComplete="off" checked={props.product.repurchase} onChange={handleAddToCart}/>
                     <label className="btn btn-outline-primary" htmlFor={props.product.id}>
                         <FontAwesomeIcon icon={faCartShopping} htmlFor={props.product.id} />
                     </label>

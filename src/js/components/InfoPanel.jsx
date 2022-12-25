@@ -3,41 +3,47 @@ import isExpired from "../helper/determineExpiration";
 
 
 function InfoPanel(props) {
-
     const totalStock = props.products.reduce((currentStock, product) => product.stock + currentStock, 0);
-
-    /*-----Hilfsmethoden----- O(1) < O(log(n)) < O(n) < O(n*log(n)) < O(n^2) < O(2^n) < O(n!)*/
-
-    function getMinCapa() {
-   
-        //Finde den kleinsten PLatzverbrauch
-        let minA = props.products.reduce((a,b)=>a.volume<b.volume?a:b).volume; // 30 chars 
-        return minA;
-    }
-
-
-    function getMaxCapa(){
-
-        let maxA = props.products.reduce((a,b)=>a.volume>b.volume?a:b).volume; // 30 chars time complexity:  O(n)
-
-        return maxA;
-    }
-
-
-    //Warum hier? Wegen der Anzahl
+    
+    ////-------------------------------------------------------------------------------------
     let useUntilTomorrowProducts = [];
-        props.products.forEach(product => {
-            if (isExpired(product,1)) useUntilTomorrowProducts.push(product);
-        });
-    const handleQuickUseProducts = () => props.showModalCallback(useUntilTomorrowProducts);
-
-    //Warum hier? Wegen der Anzahl
+    props.products.forEach(product => {
+        if (isExpired(product,"tomorrow")) useUntilTomorrowProducts.push(product);
+    });
+    const handleQuickUseProducts = (evt) => {
+        let purpose = evt.target.parentNode.parentNode.innerText.split('\n')[0];
+        props.showModalCallback(useUntilTomorrowProducts, purpose);
+    };
+    ////-------------------------------------------------------------------------------------
     let expiredProducts = [];
-        props.products.forEach(product => {
-            if (isExpired(product)) expiredProducts.push(product);
-        });
-    const handleExpiredProducts = () => props.showModalCallback(expiredProducts);
+    props.products.forEach(product => {
+        if (isExpired(product)) expiredProducts.push(product);
+    });
+    const handleExpiredProducts = (evt) => {
+        let purpose = evt.target.parentNode.parentNode.innerText.split('\n')[0];
+        props.showModalCallback(expiredProducts, purpose);
+    };
+    ////-------------------------------------------------------------------------------------
+    let smallestProducts = [];
+    let smallestVolumeUnit = props.products.reduce((a,b)=>a.volume<b.volume?a:b).volume;
+    props.products.forEach(product => {
+        if (product.volume === smallestVolumeUnit) smallestProducts.push(product);
+    })
+    const handleSmallestProducts = (evt) => {
+        let purpose = evt.target.parentNode.parentNode.innerText.split('\n')[0];
+        props.showModalCallback(smallestProducts, purpose);
+    }
+    ////-------------------------------------------------------------------------------------
+    let biggestProducts = [];
+    let biggestVolumeUnit = props.products.reduce((a,b)=>a.volume>b.volume?a:b).volume;
+    props.products.forEach(product => {
+        if (product.volume === biggestVolumeUnit) biggestProducts.push(product);
+    })
 
+    const handleBiggestProducts = (evt) => {
+        let purpose = evt.target.parentNode.parentNode.innerText.split('\n')[0];
+        props.showModalCallback(biggestProducts, purpose);
+    }
 
     return (
         <div className="col-1 py-4">
@@ -61,7 +67,7 @@ function InfoPanel(props) {
             
             {/* <!-- Div für Label der Anzahl der Produkte, die morgen ablaufen --> */}
             <div>
-                <label className="form-label">Use Quick 
+                <label className="form-label">Use Quick
                     <br />
                     <button type="button" className="btn btn-warning .mx-auto infoPanelStyling" onClick={handleQuickUseProducts}>
                         <span className="badge text-bg" id="products-until-tomorrow-span">{useUntilTomorrowProducts.length}</span>
@@ -74,7 +80,7 @@ function InfoPanel(props) {
                 <label className="form-label">Expired products 
                     <br />
                     <button type="button" className="btn btn-danger .mx-auto infoPanelStyling" onClick={handleExpiredProducts}>
-                        <span className="badge text-bg" id="products-expired-span">{expiredProducts.length}</span>
+                        <span className="badge text-bg">{expiredProducts.length}</span>
                     </button>
                 </label>
             </div>
@@ -83,8 +89,8 @@ function InfoPanel(props) {
             <div>
                 <label className="form-label">Smallest products
                     <br />
-                    <button type="button" className="btn btn-secondary .mx-auto infoPanelStyling" id="smallest-product-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <span className="badge text-bg" id="smallest-product-span">0</span>
+                    <button type="button" className="btn btn-secondary .mx-auto infoPanelStyling" onClick={handleSmallestProducts}>
+                        <span className="badge text-bg">{smallestProducts.length >= 1 ? smallestProducts.length : "-"}</span>
                     </button>
                 </label>
             </div>
@@ -93,8 +99,8 @@ function InfoPanel(props) {
             <div>
                 <label className="form-label">Biggest products
                     <br />
-                    <button type="button" className="btn btn-secondary .mx-auto infoPanelStyling" id="biggest-product-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <span className="badge text-bg" id="biggest-product-span">0</span>
+                    <button type="button" className="btn btn-secondary .mx-auto infoPanelStyling" onClick={handleBiggestProducts}>
+                        <span className="badge text-bg">{biggestProducts.length >= 1 ? biggestProducts.length : "-"}</span>
                     </button>
                 </label>
             </div>

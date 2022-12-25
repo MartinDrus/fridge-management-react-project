@@ -1,6 +1,6 @@
+import PresetButton from "./PresetButton";
 
-
-function Presets() {
+function PresetList(props) {
     
 
     return (
@@ -16,8 +16,11 @@ function Presets() {
                     </div>
                 </div>
                 <div>
+
+                    <PresetButton  name={"Eggs"}/>
+
                     {/* <!-- Button zum Befüllen des Produkt-Hinzufüge-Formulars mit Voreinstellungen --> */}
-                    <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Salami</button>
+                    {/* <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Salami</button>
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Cheese</button>
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Milk</button>
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Yogurt</button>
@@ -32,11 +35,11 @@ function Presets() {
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Sausage</button>
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Fish</button>
                     <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Wine</button>
-                    <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Juice</button>
+                    <button type="button" className="btn btn-secondary mb-2 mx-1 preset-class">Juice</button> */}
                 </div>
             </div>
 
     )
 }
 
-export default Presets;
+export default PresetList;

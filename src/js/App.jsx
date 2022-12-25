@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import '../scss/App.scss'
 // Import all of Bootstrap's JS
-import * as bootstrap from 'bootstrap'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
-import ModalContainer from './components/ModalContainer'
-import FridgeContentForm from "./components/FridgeContentForm"
-import InfoPanel from './components/InfoPanel'
 import FridgeContentContainer from './components/FridgeContentContainer'
+import FridgeContentForm from "./components/FridgeContentForm"
 import FridgeControls from './components/FridgeControls'
-import ProgressBarContainer from './components/ProgressBarContainer'
-import Presets from './components/Presets'
+import InfoPanel from './components/InfoPanel'
+import Presets from './components/presets/PresetList'
 import ProductCardItem from './components/ProductCardItem'
+import ProgressBarContainer from './components/ProgressBarContainer'
+import ModalContainer from './components/shoppingList/ModalContainer'
 
 import isExpired from './helper/determineExpiration'
 
@@ -21,22 +20,22 @@ function App() {
 	let [content, setContent] = useState(fetchFromLocalStorage());
 	let [shoppingList, setShoppingList] = useState(fetchShoppingListFromLocalStorage())
 	let [modalContent, setModalContent] = useState([]);
+	let [modalInfoPurpose, setModalInfoPurpose] = useState("");
 
 	const [modalShow, setModalShow] = useState(false);
 	const capacity = content.reduce((freeCapacity, product) => freeCapacity - (product.stock * product.volume), 100);
-	let contentCopy = [...content];
 
 
 	useEffect(() => {
-		console.log("useEffect fires");
 		localStorage.setItem('content', JSON.stringify(content));
-		localStorage.setItem('shopping', JSON.stringify(shoppingList));
-	}, [content, shoppingList]);
+	}, [content]);
 
-	// useEffect(() => {
-	// }, [shoppingList]);
+	useEffect(() => {
+		localStorage.setItem('shopping', JSON.stringify(shoppingList));
+	}, [shoppingList]);
 
 	const handleNewFridgeItem = (newItem)=>{
+		let contentCopy = [...content];
 		if ((capacity - newItem.volume) >= 0) {
 			let targetContentIndex = contentCopy.findIndex(product => product.name.toLowerCase() === newItem.name.toLowerCase() && product.date === newItem.date);
 			if (targetContentIndex >= 0) {
@@ -50,6 +49,7 @@ function App() {
 	}
 
 	const handleDeleteProduct = (productId)=>{
+		let contentCopy = [...content];
 		let targetContentIndex = contentCopy.findIndex(product => product.id === productId);
 		let elFound = contentCopy[targetContentIndex];
 		if(elFound.stock > 1) {
@@ -58,22 +58,7 @@ function App() {
 		setContent(contentCopy);
 	}
 
-	const handleAddToCart = (wantedProduct)=>{
-		let targetContentIndex = contentCopy.findIndex(product => product.id === wantedProduct.id);
 
-		contentCopy.splice(targetContentIndex, 1, wantedProduct);
-		setContent(contentCopy);
-
-		handlePutOnList()		
-	}
-
-	function handlePutOnList(){
-		let shoppingListProducts = [];
-		content.forEach(product => {
-			if (product.repurchase) shoppingListProducts.push(product);
-		})
-		setShoppingList(shoppingListProducts)
-	}
 
 	const handleDefrosting = () => setContent([]);
 
@@ -86,11 +71,56 @@ function App() {
 	}
 
 	const handleSorting = ()=>{
+		let contentCopy = [...content];
 		contentCopy.sort((a, b) => new Date(a.date) - new Date(b.date));
 		setContent(contentCopy)
 	}
 
-	console.log(content);
+	const openModal = (productArray, purpose) => {
+		setModalShow(true);
+		setModalContent(productArray);
+		setModalInfoPurpose(purpose);
+	};
+
+	const removeCallback = (productId) => {
+		let contentCopy = [...content];
+		let shoppingListCopy = [...shoppingList]
+		let targetInShoppingList = shoppingListCopy.findIndex(target => target.id === productId);
+		let targetInContentList = contentCopy.findIndex(target => target.id === productId);
+
+		if (targetInShoppingList >= 0) {
+			shoppingListCopy.splice(targetInShoppingList ,1);
+			setShoppingList(shoppingListCopy)
+		} else {
+			console.log("🚀 ~ file: App.jsx:95 ~ removeCallback ~ target not found")
+		}
+
+		if (targetInContentList >= 0) {			
+			contentCopy[targetInContentList].repurchase = false;
+			setContent(contentCopy)
+		} else {
+			console.log("🚀 ~ file: App.jsx:107 ~ removeCallback ~ target not found")
+		}
+	}
+
+	const handleAddToCart = (wantedProduct)=>{
+		let shoppingListProducts = [];
+		content.forEach(product => {
+			if (product.repurchase) {
+				const productClone = structuredClone(product)
+				productClone.stock = 1;
+				shoppingListProducts.push(productClone);
+			}
+		})
+		setShoppingList(shoppingListProducts);
+
+		let targetIndex = content.findIndex(product => product.id === wantedProduct.id);
+		content.splice(targetIndex, 1, wantedProduct)
+		setContent(content)
+	}
+
+
+
 	let fridgeItems = content.map(product => {
 		return <ProductCardItem 
 			key={product.id}
@@ -101,44 +131,13 @@ function App() {
 		/>
 	});
 
-	const openModal = (props) => {
-		setModalShow(true)
-		setModalContent(props)
-	};
-
-	const handleStock = (product, todo) => {
-		let shoppingListCopy = [...shoppingList]
-		let targetIndex = shoppingListCopy.findIndex(target => target.id === product.id);
-
-		if (product.stock === 1 && todo < 0) {
-			shoppingListCopy.splice(targetIndex, 1);
-
-			let boughtTargetIndex = contentCopy.findIndex(target => target.id === product.id);
-			let boughtItem = contentCopy[boughtTargetIndex];
-			boughtItem.repurchase = false;
-
-			handlePutOnList()
-			setContent(contentCopy)
-
-		} else {
-
-			product.stock += todo;
-			console.log(product);
-			shoppingListCopy.splice(targetIndex, 1, product);
-			setShoppingList(shoppingListCopy);
-
-
-		}
-
-	}
-
 	return (
 
 		<div id="fridge-app-container" className="container-fluid">
 			<div className="row" id='placeholderOne'>
 				{/* <!-- Platzhalter --> */}
 			</div>
-			<ModalContainer infoPanel={modalContent} shoppingList={shoppingList} stockCallback={handleStock} show={modalShow} onHide={() => setModalShow(false)}/>
+			<ModalContainer infoPanel={modalContent} infoPanelPurpose={modalInfoPurpose} shoppingList={shoppingList} removeCallback={removeCallback} deleteCallback={handleDeleteProduct} show={modalShow} onHide={() => setModalShow(false)}/>
 			<div className="row">
 				{/* INFO PANEL */}
 				<InfoPanel products={content} leftSpace={capacity} showModalCallback={openModal}/>

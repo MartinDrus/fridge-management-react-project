@@ -1,27 +1,29 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 
 function FridgeContentForm(props) {
     let [volume, setVolume] = useState(1);
     let stock = 1;
 
+    const nameRef = useRef()
+
+
     /* Submithandler fuer das Formular neuer Todos */
-    function handleSubmit(evt) {
+    function onSubmit(evt) {
         // Verhindere Standard-Verhalten des Browsers 
         // fuer das submit-Event (neuladen der Page)
         evt.preventDefault();
 
-        let productName = evt.target[0].value.trim();
         let productCategory = parseInt(evt.target[1].value);
         let productVolume = evt.target[2].value;
         let productExpDate = evt.target[3].value 
 
 
-        if (productName.length > 0 && productExpDate.length > 0) {
+        // if (nameRef.length > 0 && productExpDate.length > 0) {
             
             let newProduct = {
                 id: generateRandomId(),
-                name: productName,
+                name: nameRef.current.value,
                 categoryId: productCategory,
                 volume: productVolume,
                 date: productExpDate,
@@ -31,7 +33,7 @@ function FridgeContentForm(props) {
             }
             props.newProductCallback(newProduct);
         }
-    }
+    // }
 
 
     function generateRandomId() {
@@ -50,13 +52,13 @@ function FridgeContentForm(props) {
     
     return ( 
 
-        <form className="col-6" onSubmit={handleSubmit} >
+        <form className="col-6" onSubmit={onSubmit} >
                 {/* <!-- Formular für das Hinzufügen neuer Produkte --> */}
                 <div className="row justify-content-center">
                     {/* <!-- Eingabebereich für den Namen des neuen Produkts --> */}
                     <div className="col-3">
                         <label htmlFor="form-add-product-name" className="form-label my-2">Name</label>
-                        <input type="text" className="form-control" placeholder="Product Name" id="form-add-product-name" data-log-id="name" onChange={activateBtn}/>
+                        <input ref={nameRef} type="text" className="form-control" placeholder="Product Name" id="form-add-product-name" data-log-id="name" onChange={activateBtn}/>
                     </div>
                     {/* <!-- Eingabebereich für den Namen des neuen Produkts --> */}
                     <div className="col-3">
