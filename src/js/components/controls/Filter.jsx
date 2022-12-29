@@ -18,7 +18,7 @@ console.log("🚀 ~ file: Filter.jsx:5 ~ Filter ~ props", props.filterResult)
             setFilterBtnClasses("input-group")
         },505);
         return () => clearTimeout(resetClass);
-    },[])
+    },[props.filterResult])
 
     const handleFilter = () => props.filterCallback(filterOptionRef.current.value)
 
