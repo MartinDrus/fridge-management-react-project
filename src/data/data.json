@@ -1,0 +1,101 @@
+
+{    
+    "presetData" : [
+        {
+            "name":"salami",
+            "categoryNumber": 3,
+            "productVolume": 2,
+            "daysTilExpiry": 21
+        },
+        {
+            "name":"cheese",
+            "categoryNumber": 1,
+            "productVolume": 1,
+            "daysTilExpiry": 12 
+        },
+        {
+            "name":"milk",
+            "categoryNumber": 1,
+            "productVolume": 3,
+            "daysTilExpiry": 90
+        },
+        {
+            "name":"yogurt",
+            "categoryNumber": 1,
+            "productVolume": 1,
+            "daysTilExpiry":12
+        },
+        {
+            "name":"broccoli",
+            "categoryNumber": 2,
+            "productVolume": 3,
+            "daysTilExpiry": 3
+        },
+        {
+            "name":"zucchini",
+            "categoryNumber": 2,
+            "productVolume":2,
+            "daysTilExpiry": 12
+        },
+        {
+            "name": "carrots",
+            "categoryNumber": 2,
+            "productVolume": 2,
+            "daysTilExpiry": 9
+        },
+        {
+            "name": "eggs",
+            "categoryNumber": 3,
+            "productVolume": 2,
+            "daysTilExpiry": 9
+        },
+        {
+            "name": "butter",
+            "categoryNumber": 1,
+            "productVolume": 2,
+            "daysTilExpiry": 1
+        },
+        {
+            "name": "jam",
+            "categoryNumber": 4,
+            "productVolume": 2,
+            "daysTilExpiry": 9
+        },
+        {
+            "name": "eggplants",
+            "categoryNumber": 2,
+            "productVolume": 2,
+            "daysTilExpiry": 9
+        },
+        {
+            "name": "cucumber",
+            "categoryNumber": 2,
+            "productVolume": 2,
+            "daysTilExpiry": 4
+        },
+        {
+            "name": "sausage",
+            "categoryNumber": 3,
+            "productVolume": 2,
+            "daysTilExpiry": 3
+        },
+        {
+            "name": "fish",
+            "categoryNumber": 3,
+            "productVolume": 2,
+            "daysTilExpiry": 1
+        },
+        {
+            "name": "wine",
+            "categoryNumber": 0,
+            "productVolume": 3,
+            "daysTilExpiry": 1
+        },
+        {
+            "name": "juice",
+            "categoryNumber": 0,
+            "productVolume": 3,
+            "daysTilExpiry": 1
+        }
+    ]
+}

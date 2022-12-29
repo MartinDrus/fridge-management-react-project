@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '../scss/App.scss'
 // Import all of Bootstrap's JS
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import FridgeContentContainer from './components/FridgeContentContainer'
 import FridgeContentForm from "./components/FridgeContentForm"
-import FridgeControls from './components/FridgeControls'
+import FridgeControls from './components/controls/FridgeControls'
 import InfoPanel from './components/InfoPanel'
 import Presets from './components/presets/PresetList'
 import ProductCardItem from './components/ProductCardItem'
-import ProgressBarContainer from './components/ProgressBarContainer'
+import ProgressBarContainer from './components/progressbar/ProgressBarContainer'
 import ModalContainer from './components/shoppingList/ModalContainer'
 
 import isExpired from './helper/determineExpiration'
@@ -21,6 +21,9 @@ function App() {
 	let [shoppingList, setShoppingList] = useState(fetchShoppingListFromLocalStorage())
 	let [modalContent, setModalContent] = useState([]);
 	let [modalInfoPurpose, setModalInfoPurpose] = useState("");
+	let [customPresetElement, setCustomPresetElement ] = useState(null);
+	let [filteredItems, setFilteredItems] = useState([]);
+	let [filterSuccess, setFilterSuccess] = useState(true);
 
 	const [modalShow, setModalShow] = useState(false);
 	const capacity = content.reduce((freeCapacity, product) => freeCapacity - (product.stock * product.volume), 100);
@@ -36,8 +39,13 @@ function App() {
 
 	const handleNewFridgeItem = (newItem)=>{
 		let contentCopy = [...content];
+
+
 		if ((capacity - newItem.volume) >= 0) {
-			let targetContentIndex = contentCopy.findIndex(product => product.name.toLowerCase() === newItem.name.toLowerCase() && product.date === newItem.date);
+
+			const hasSameDateAndName = (product) => (product.date === newItem.date && product.name.toLowerCase() === newItem.name.toLowerCase());
+			let targetContentIndex = contentCopy.findIndex( product => hasSameDateAndName(product) )
+
 			if (targetContentIndex >= 0) {
 				contentCopy[targetContentIndex].stock +=1;
 				setContent(contentCopy);
@@ -76,6 +84,25 @@ function App() {
 		setContent(contentCopy)
 	}
 
+	const handleFilter = (props) => {
+		let filterQuery = parseInt(props)
+		let contentCopy = [...content];
+
+		if(props < 0) {
+			setFilterSuccess(true)
+			setFilteredItems([])
+			setContent(contentCopy)
+		} else {
+			let result = contentCopy.some(product => product.categoryId === filterQuery)
+			setFilterSuccess(result)
+
+			filteredItems = contentCopy.filter(product => product.categoryId === filterQuery);
+			setFilteredItems(filteredItems);
+		}
+
+	}
+
+
 	const openModal = (productArray, purpose) => {
 		setModalShow(true);
 		setModalContent(productArray);
@@ -107,9 +134,12 @@ function App() {
 		let shoppingListProducts = [];
 		content.forEach(product => {
 			if (product.repurchase) {
-				const productClone = structuredClone(product)
-				productClone.stock = 1;
-				shoppingListProducts.push(productClone);
+				let duplicateIndex = shoppingListProducts.findIndex(target => target.name.toLowerCase() === product.name.toLowerCase())
+				if (duplicateIndex < 0) {
+					const productClone = structuredClone(product)
+					productClone.stock = 1;
+					shoppingListProducts.push(productClone);
+				}
 			}
 		})
 		setShoppingList(shoppingListProducts);
@@ -119,9 +149,14 @@ function App() {
 		setContent(content)
 	}
 
+	const handlePresetRequest = (props) => handleNewFridgeItem(props);
+		
+	const handleCustomPresetCallback = (props) => setCustomPresetElement(props);
+	
 
+	let itemsArray = filteredItems.length > 0 ? filteredItems : content
 
-	let fridgeItems = content.map(product => {
+	let fridgeItems = itemsArray.map(product => {
 		return <ProductCardItem 
 			key={product.id}
 			product={product}
@@ -143,12 +178,20 @@ function App() {
 				<InfoPanel products={content} leftSpace={capacity} showModalCallback={openModal}/>
 
 				{/* FRIDGE CONTAINER */}
-				<FridgeContentContainer>
+				<FridgeContentContainer >
 					{fridgeItems}
 				</FridgeContentContainer>
 
 				{/* CONTROLS */}
-				<FridgeControls shoppingListSize={shoppingList.length} showModalCallback={openModal} sortCallback={handleSorting} cleanCallback={handleCleaning} defrostCallback={handleDefrosting}/>
+				<FridgeControls
+					shoppingListSize={shoppingList.length}
+					noFilterResult={filterSuccess}
+					showModalCallback={openModal}
+					sortCallback={handleSorting}
+					cleanCallback={handleCleaning}
+					defrostCallback={handleDefrosting}
+					filterCallback={handleFilter}
+				/>
 			</div>
 
 			{/* PROGRESS BAR */}
@@ -157,10 +200,17 @@ function App() {
 			{/* <!-- Bereich für das Formular zum Hinzufügen neuer Produkte --> */}
 			<div className="row justify-content-center">
 				{/* PRESETS */}
-				<Presets/>
+				<Presets 
+					createCardCallback={handlePresetRequest}
+					customPresetCallback={handleCustomPresetCallback}
+				/>
 
 				{/* ADD PRODUCT */}
-				<FridgeContentForm newProductCallback={handleNewFridgeItem} />
+				<FridgeContentForm
+					newProductCallback={handleNewFridgeItem}
+					customPresetCallBack={customPresetElement}
+
+				/>
 
 				<div className='col-0'>
 				{/* <!-- Platzhalter --> */}
@@ -187,4 +237,5 @@ function fetchShoppingListFromLocalStorage() {
 	return storedShoppingList ?? [];
 }
 
-export default App
+
+export default App;

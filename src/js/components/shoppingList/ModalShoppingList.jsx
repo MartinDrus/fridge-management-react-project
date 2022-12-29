@@ -1,7 +1,6 @@
 import ModalShoppingListItem from './ModalShoppingListItem';
 
 function ModalShoppingList(props) {
-console.log("🚀 ~ file: ModalShoppingList.jsx:4 ~ ModalShoppingList ~ props", props)
 
     let shoppingListItem = props.content.map(product => {
         return <ModalShoppingListItem 

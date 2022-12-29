@@ -33,7 +33,6 @@ function ModalContainer(props){
     const cartContent = props.shoppingList.length > 0 ? <ModalShoppingList content={props.shoppingList} removeCallback={props.removeCallback} /> : "No items on your shopping list";
     const infoPanelContent = !showCart && props.infoPanel.length > 0 ? <ModalInfoDisplay content={props.infoPanel} deleteCallback={props.deleteCallback} /> : `${infoPanelText}`
 
-    console.log("🚀 ~ file: ModalContainer.jsx:36 ~ ModalContainer ~ props.infoPanel", props.infoPanel)
     return (
         <Modal         
             show={props.show}

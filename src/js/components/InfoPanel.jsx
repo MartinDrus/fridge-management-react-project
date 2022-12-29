@@ -3,7 +3,8 @@ import isExpired from "../helper/determineExpiration";
 
 
 function InfoPanel(props) {
-    const totalStock = props.products.reduce((currentStock, product) => product.stock + currentStock, 0);
+
+    const totalStock = props.products.reduce((currentStock, product) => product.stock + currentStock, 0)
     
     ////-------------------------------------------------------------------------------------
     let useUntilTomorrowProducts = [];
@@ -25,7 +26,7 @@ function InfoPanel(props) {
     };
     ////-------------------------------------------------------------------------------------
     let smallestProducts = [];
-    let smallestVolumeUnit = props.products.reduce((a,b)=>a.volume<b.volume?a:b).volume;
+    let smallestVolumeUnit = props.products.reduce((a,b)=>a.volume<b.volume?a:b, 0).volume;
     props.products.forEach(product => {
         if (product.volume === smallestVolumeUnit) smallestProducts.push(product);
     })
@@ -35,11 +36,10 @@ function InfoPanel(props) {
     }
     ////-------------------------------------------------------------------------------------
     let biggestProducts = [];
-    let biggestVolumeUnit = props.products.reduce((a,b)=>a.volume>b.volume?a:b).volume;
+    let biggestVolumeUnit = props.products.reduce((a,b)=>a.volume>b.volume?a:b, 0).volume;
     props.products.forEach(product => {
         if (product.volume === biggestVolumeUnit) biggestProducts.push(product);
     })
-
     const handleBiggestProducts = (evt) => {
         let purpose = evt.target.parentNode.parentNode.innerText.split('\n')[0];
         props.showModalCallback(biggestProducts, purpose);
