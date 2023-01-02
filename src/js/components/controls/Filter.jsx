@@ -6,19 +6,19 @@ console.log("🚀 ~ file: Filter.jsx:5 ~ Filter ~ props", props.filterResult)
 
     // Variable for CSS-Animation-Class
     let [filterBtnClasses, setFilterBtnClasses] = useState(`input-group`);
-    // Storing search-value for filtration
-    console.log("🚀 ~ file: Filter.jsx:10 ~ Filter ~ filterBtnClasses", filterBtnClasses)
+    // Storing search-value for filtration    
     const filterOptionRef = useRef();
 
     useEffect(() => {
         // Checking for Filter-Result
         setFilterBtnClasses(`input-group ${!props.filterResult ? "noFilterResult" : ""}`)
+
         // Resetting CSS-Class after 0.5 Animation-Time
         const resetClass = setTimeout(() => {
             setFilterBtnClasses("input-group")
         },505);
         return () => clearTimeout(resetClass);
-    },[props.filterResult])
+    },[props])
 
     const handleFilter = () => props.filterCallback(filterOptionRef.current.value)
 
