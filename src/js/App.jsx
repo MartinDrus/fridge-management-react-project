@@ -28,7 +28,6 @@ function App() {
 	const [modalShow, setModalShow] = useState(false);
 	const capacity = content.reduce((freeCapacity, product) => freeCapacity - (product.stock * product.volume), 100);
 
-
 	useEffect(() => {
 		localStorage.setItem('content', JSON.stringify(content));
 	}, [content]);
@@ -39,7 +38,6 @@ function App() {
 
 	const handleNewFridgeItem = (newItem)=>{
 		let contentCopy = [...content];
-
 
 		if ((capacity - newItem.volume) >= 0) {
 
@@ -95,11 +93,9 @@ function App() {
 		} else {
 			let result = contentCopy.some(product => product.categoryId === filterQuery)
 			setFilterSuccess(result)
-
 			filteredItems = contentCopy.filter(product => product.categoryId === filterQuery);
 			setFilteredItems(filteredItems);
 		}
-
 	}
 
 
@@ -150,10 +146,8 @@ function App() {
 	}
 
 	const handlePresetRequest = (props) => handleNewFridgeItem(props);
-		
 	const handleCustomPresetCallback = (props) => setCustomPresetElement(props);
 	
-
 	let itemsArray = filteredItems.length > 0 ? filteredItems : content
 
 	let fridgeItems = itemsArray.map(product => {
@@ -209,7 +203,6 @@ function App() {
 				<FridgeContentForm
 					newProductCallback={handleNewFridgeItem}
 					customPresetCallBack={customPresetElement}
-
 				/>
 
 				<div className='col-0'>
